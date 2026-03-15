@@ -3,6 +3,7 @@ import cookieParser from 'cookie-parser';
 import crypto from 'node:crypto';
 import { z } from 'zod';
 import cors from 'cors';
+import morgan from 'morgan';
 
 const app = express();
 const PORT = 3000;
@@ -11,6 +12,8 @@ app.use(cors({
     origin: 'http://localhost:5173',
     credentials: true,
 }));
+
+app.use(morgan('dev'));
 
 const CartItemSchema = z.object({
     productId: z.number(),
