@@ -2,9 +2,15 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import crypto from 'node:crypto';
 import { z } from 'zod';
+import cors from 'cors';
 
 const app = express();
 const PORT = 3000;
+
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true,
+}));
 
 const CartItemSchema = z.object({
     productId: z.number(),
@@ -34,13 +40,11 @@ function getOrCreateCart(req: express.Request, res: express.Response): string {
     return cartId;
 }
 
-// Warenkorb abrufen
 app.get('/cart', (req, res) => {
     const cartId = getOrCreateCart(req, res);
     res.json(carts.get(cartId));
 });
 
-// Artikel hinzufügen
 app.post('/cart/items', (req, res) => {
     const cartId = getOrCreateCart(req, res);
     const cart = carts.get(cartId)!;
@@ -61,7 +65,6 @@ app.post('/cart/items', (req, res) => {
     res.json(cart);
 });
 
-// Artikel entfernen
 app.delete('/cart/items/:productId', (req, res) => {
     const cartId = getOrCreateCart(req, res);
     const cart = carts.get(cartId)!;
@@ -77,7 +80,6 @@ app.delete('/cart/items/:productId', (req, res) => {
     res.json(filtered);
 });
 
-// Warenkorb leeren
 app.delete('/cart', (req, res) => {
     const cartId = getOrCreateCart(req, res);
     carts.set(cartId, []);
